@@ -18,7 +18,8 @@ to_influx(){
 
 main(){
   # maybe we can just use mein.aramark.de/thales-deutschland/wp-admin/admin-ajax.php
-  val=$(curl --silent http://mein.aramark.de/thales-deutschland/auslastung/ | grep percentagevalue | sed -n 's/.*data-value="\([0-9,]*\)".*/\1/p' | tr , .)
+  val=$(curl --silent http://mein.aramark.de/thales-deutschland/auslastung/ | \
+    grep 'class="t1"' | sed -n 's/.*class="t1">\([0-9,.]\+\)%<.*/\1/p' | tr , .)
   echo "current is $val"
   if to_influx $val;then
     echo "upload successful"
@@ -26,4 +27,4 @@ main(){
     echo "upload failed ..."
   fi
 }
-main()
+main
