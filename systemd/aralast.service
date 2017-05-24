@@ -1,0 +1,10 @@
+[Unit]
+Description=aralast fetcher
+
+[Service]
+Type=oneshot
+User=nobody
+Group=nobody
+#RemainAfterExit=yes
+WorkingDirectory=/opt/aralast
+ExecStart=/bin/sh aralast.sh
