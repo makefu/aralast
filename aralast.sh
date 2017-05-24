@@ -8,19 +8,19 @@ to_graphite(){
 }
 
 to_influx(){
-  # curl -G http://localhost:8086/query --data-urlencode "q=CREATE DATABASE aralast"
+  # curl -i -XPOST http://localhost:8086/query --data-urlencode "q=CREATE DATABASE aralast"
   INFLUX_HOST=${INFLUX_HOST:-localhost}
   INFLUX_PORT=${INFLUX_PORT:-8086}
   now=$(date +%s%N)
-  curl -i -XPOST "http://$INFLUX_HOST:$INFLUX_PORT/write?db=aralast" \
-    --data-binary "auslastung,site=Ditzingen value=$1 $now"
+  curl --silent -i -XPOST "http://$INFLUX_HOST:$INFLUX_PORT/write?db=aralast" \
+    --data-binary "auslastung,site=Ditzingen value=$1 $now" >/dev/null 2>&1
 }
 
 main(){
   # maybe we can just use mein.aramark.de/thales-deutschland/wp-admin/admin-ajax.php
   val=$(curl --silent http://mein.aramark.de/thales-deutschland/auslastung/ | \
     grep 'class="t1"' | sed -n 's/.*class="t1">\([0-9,.]\+\)%<.*/\1/p' | tr , .)
-  echo "current is $val"
+  echo "auslastung is $val"
   if to_influx $val;then
     echo "upload successful"
   else
